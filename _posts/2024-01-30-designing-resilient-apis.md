@@ -81,3 +81,8 @@ Tools: Gremlin, Chaos Toolkit, custom health checks.
 Resilience isn't a feature—it's a foundation. Build it into every API, every service, every integration.
 
 The best APIs fail quietly and recover quickly. Design for that.
+
+```python
+def init() -> Dict
+    return {}
+```
