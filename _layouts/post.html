@@ -2,6 +2,35 @@
 layout: default
 ---
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{{ page.title | escape }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ site.author.name }}",
+    "url": "{{ site.author.url }}"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "{{ site.author.name }}",
+    "url": "{{ site.author.url }}"
+  },
+  "datePublished": "{{ page.date | date_to_xmlschema }}",
+  "dateModified": "{{ page.date | date_to_xmlschema }}",
+  "description": "{{ page.excerpt | default: site.description | strip_html | normalize_whitespace | truncatewords: 20 | escape }}",
+  "image": "{{ page.seo.image | default: '/assets/images/profile.jpg' | absolute_url }}",
+  "url": "{{ page.url | absolute_url }}",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ page.url | absolute_url }}"
+  },
+  "wordCount": {{ content | number_of_words }},
+  "timeRequired": "PT{{ content | number_of_words | divided_by: 200 | plus: 1 }}M"
+}
+</script>
+
 <article class="post">
   <header class="post-header">
     <h1 class="post-title">{{ page.title | escape }}</h1>
@@ -21,6 +50,10 @@ layout: default
   </header>
 
   <div class="post-content">
+    <div id="toc" class="table-of-contents" style="display: none;">
+      <h3>Table of Contents</h3>
+      <nav id="toc-nav"></nav>
+    </div>
     {{ content }}
   </div>
 
@@ -56,4 +89,24 @@ layout: default
     codeBlock.classList.add('code-block-wrapper');
     codeBlock.appendChild(button);
   });
+</script>
+
+<script>
+  // Generate Table of Contents
+  const headings = document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3');
+  if (headings.length > 0) {
+    const tocNav = document.getElementById('toc-nav');
+    const toc = document.getElementById('toc');
+    headings.forEach((heading, index) => {
+      const id = `heading-${index}`;
+      heading.id = id;
+      const level = heading.tagName.toLowerCase();
+      const link = document.createElement('a');
+      link.href = `#${id}`;
+      link.textContent = heading.textContent;
+      link.className = `toc-${level}`;
+      tocNav.appendChild(link);
+    });
+    toc.style.display = 'block';
+  }
 </script>
