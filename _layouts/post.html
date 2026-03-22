@@ -93,7 +93,7 @@ layout: default
 
 <script>
   // Generate Table of Contents
-  const headings = document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3');
+  const headings = document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3:not(.table-of-contents h3)');
   if (headings.length > 0) {
     const tocNav = document.getElementById('toc-nav');
     const toc = document.getElementById('toc');
