@@ -511,6 +511,46 @@ blockquote {
   }
 }
 
+/* Table of Contents */
+.table-of-contents {
+  background: #2a2a2a;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border-left: 4px solid #61dafb;
+}
+
+.table-of-contents h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.table-of-contents nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.table-of-contents a {
+  color: #cccccc;
+  text-decoration: none;
+  padding: 0.25rem 0;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.table-of-contents a:hover {
+  color: #61dafb;
+}
+
+.table-of-contents .toc-h2 {
+  padding-left: 1rem;
+}
+
+.table-of-contents .toc-h3 {
+  padding-left: 2rem;
+}
+
 /* Light Theme */
 .light-theme {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
