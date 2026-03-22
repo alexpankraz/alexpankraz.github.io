@@ -1,0 +1,51 @@
+name: Finalize Blog Post on Merge
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '_posts/**'
+
+jobs:
+  format-post:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply Date and Rename
+        run: |
+          PUBLISH_DATE=$(date +%Y-%m-%d)
+          CHANGES_MADE=false
+
+          for file in _posts/*.md; do
+            filename=$(basename "$file")
+            
+            # 1. Check if filename needs a date prefix
+            if [[ ! $filename =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]]; then
+              echo "Processing draft: $filename"
+              
+              # 2. Update ONLY the date inside the YAML block (lines 1 to the first ---)
+              # This prevents changing "date: ..." text inside your actual article body.
+              sed -i "1,/---/ s/^date: .*/date: ${PUBLISH_DATE}/" "$file"
+              
+              # 3. Rename the file to the Jekyll standard
+              NEW_NAME="_posts/${PUBLISH_DATE}-${filename}"
+              mv "$file" "$NEW_NAME"
+              CHANGES_MADE=true
+            fi
+          done
+
+          if [ "$CHANGES_MADE" = true ]; then
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
+            git add .
+            git commit -m "Auto-format: Set publishing date for new posts"
+            git push
+          else
+            echo "No new drafts detected."
+          fi
