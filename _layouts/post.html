@@ -1,0 +1,59 @@
+---
+layout: default
+---
+
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title">{{ page.title | escape }}</h1>
+    <span class="read-time" title="Estimated read time">
+    {% assign words = content | number_of_words %}
+    {% if words < 360 %}
+      1 min read
+    {% else %}
+      {{ words | divided_by: 200 | plus: 1 }} min read
+    {% endif %}
+  </span>
+    <p class="post-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">
+        {{ page.date | date: "%B %d, %Y" }}
+      </time>
+    </p>
+  </header>
+
+  <div class="post-content">
+    {{ content }}
+  </div>
+
+  {% if page.tags %}
+  <div class="post-tags">
+    <span class="tag-label">Tags:</span>
+    {% for tag in page.tags %}
+      <span class="tag">{{ tag }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+</article>
+
+
+<script>
+  document.querySelectorAll('pre').forEach((codeBlock) => {
+    // Create the button
+    const button = document.createElement('button');
+    button.className = 'copy-code-button';
+    button.type = 'button';
+    button.innerText = 'Copy';
+
+    // Add click event
+    button.addEventListener('click', () => {
+      const code = codeBlock.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        button.innerText = 'Copied!';
+        setTimeout(() => { button.innerText = 'Copy'; }, 2000);
+      });
+    });
+
+    // Append button to the pre block
+    codeBlock.classList.add('code-block-wrapper');
+    codeBlock.appendChild(button);
+  });
+</script>

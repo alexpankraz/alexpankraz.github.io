@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  jekyll:
+    image: docker.io/jekyll/jekyll:latest
+    container_name: engineering-blog
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/srv/jekyll
+      - jekyll_gems:/usr/local/bundle
+    command: jekyll serve --host 0.0.0.0
+    environment:
+      - JEKYLL_ENV=development
+    security_opt:
+      - no-new-privileges:false
+    cap_add:
+      - SYS_PTRACE
+
+volumes:
+  jekyll_gems:

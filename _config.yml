@@ -1,0 +1,39 @@
+title: Engineering Perspective
+description: Enterprise systems, graph databases, architecture, and scalable engineering
+
+author:
+  name: "Alexander Pankraz"
+  url: "https://alexpankraz.github.io"
+
+theme: minima
+baseurl: ""
+url: "https://alexpankraz.github.io"
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      seo:
+        image: "/assets/images/profile.jpg"
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      seo:
+        image: "/assets/images/profile.jpg"
+
+# Build settings
+markdown: kramdown
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/

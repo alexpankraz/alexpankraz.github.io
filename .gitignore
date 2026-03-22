@@ -1,0 +1,7 @@
+_site/
+.bundle/
+vendor/
+.jekyll-cache/
+.sass-cache/
+*.log
+.DS_Store
