@@ -99,6 +99,25 @@
             moonIcon.style.display = 'none';
           }
         });
+
+        // Copy code functionality
+        document.querySelectorAll('pre').forEach(function(pre) {
+          const button = document.createElement('button');
+          button.className = 'copy-code-button';
+          button.textContent = 'Copy';
+          button.addEventListener('click', function() {
+            const code = pre.querySelector('code');
+            if (code) {
+              navigator.clipboard.writeText(code.textContent).then(function() {
+                button.textContent = 'Copied!';
+                setTimeout(function() {
+                  button.textContent = 'Copy';
+                }, 2000);
+              });
+            }
+          });
+          pre.appendChild(button);
+        });
       });
     </script>
   </body>
