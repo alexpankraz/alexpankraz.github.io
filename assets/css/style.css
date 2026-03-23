@@ -6,13 +6,23 @@
 }
 
 body {
-  font-family: 'Georgia', 'Times New Roman', serif;
-  font-size: 16px;
-  line-height: 1.8;
+  /* The Frankfurt/Zettlr Aesthetic: Clean, Modern Sans-Serif */
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  
+  /* Density: Frankfurt is tighter than your current 1.8 line-height */
+  font-size: 15px;      /* Slightly smaller for that "Application" feel */
+  line-height: 1.6;    /* Better for technical scanning than 1.8 */
+  
+  /* Colors: Keeping your dark theme but adding "Inter" style contrast */
   color: #e0e0e0;
   background: #1e1e1e;
   background-attachment: fixed;
   min-height: 100vh;
+  
+  /* Subpixel antialiasing for cleaner text on dark backgrounds */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em; /* Essential for the Inter/Frankfurt look */
 }
 
 /* Layout */
@@ -231,6 +241,11 @@ pre code {
   border-radius: 0;
 }
 
+/* Zettlr-style Code Blocks (The "Technical" touch) */
+code, pre {
+  font-family: "JetBrains Mono", "IBM Plex Mono", "Menlo", "Consolas", monospace;
+  font-size: 0.9em;
+}
 /* Lists */
 ul, ol {
   margin-left: 2rem;
