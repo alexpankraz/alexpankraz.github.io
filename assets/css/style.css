@@ -24,9 +24,7 @@ body {
 
 /* Header */
 .site-header {
-  padding: 1rem 1rem 0.5rem; /* Adjust padding for mobile */
-  background-color: #fff; /* Ensure a white background for visibility */
-  transition: padding 0.3s ease; /* Smooth transition for padding */
+  background: rgba(30, 30, 30, 0.95);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: 2rem 0;
@@ -37,19 +35,14 @@ body {
   z-index: 100;
 }
 
-.site-header.light-theme {
-  background-color: #f1f1f1; /* Light theme background */
-}
-
 .site-header .wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.site-header .site-title {
-  font-size: 1.5rem; /* Adjust font size for mobile */
-  margin: 0;
+.site-title {
+  font-size: 1.5rem;
   font-weight: 700;
   font-family: 'Helvetica Neue', Arial, sans-serif;
   color: #ffffff;
@@ -133,32 +126,6 @@ body {
 .theme-toggle .sun-icon,
 .theme-toggle .moon-icon {
   display: none;
-}
-
-@media (max-width: 768px) {
-  .site-header {
-    padding: 0.5rem 1rem; /* Smaller padding for mobile */
-  }
-
-  .site-header .site-title {
-    font-size: 1.2rem; /* Smaller font size for mobile */
-  }
-
-  .site-header .site-nav a,
-  .site-header .social-links a {
-    font-size: 0.9rem; /* Smaller font size for mobile */
-  }
-
-  .site-header .theme-toggle {
-    font-size: 1rem; /* Smaller font size for mobile */
-  }
-
-  .site-header .theme-toggle .sun-icon,
-  .site-header .theme-toggle .moon-icon {
-    display: block;
-    width: 1.5rem;
-    height: 1.5rem;
-  }
 }
 
 /* Main Content */
@@ -751,6 +718,19 @@ pre.code-block-wrapper {
 
 pre.code-block-wrapper:hover .copy-code-button {
   opacity: 1;
+}
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0; /* Hidden by default */
+  transition: opacity 0.2s;
 }
 
 pre:hover .copy-code-button {
