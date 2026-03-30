@@ -19,9 +19,9 @@ I’m particularly interested in how graphs can move beyond niche use cases and 
 
 ## What I Spend My Time On
 
-- Designing scalable, cloud-native systems on AWS
+- Designing scalable, cloud-native systems
 
-- Working with graph technologies like Neo4j and Memgraph
+- Working and exploring different graph technologies and vendors 
 
 - Exploring knowledge graphs and graph-based data modeling
 
@@ -29,11 +29,11 @@ I’m particularly interested in how graphs can move beyond niche use cases and 
 
 ## How I Approach Things
 
-- I favor pragmatic solutions over ideal ones—especially in enterprise settings where constraints are real and trade-offs matter.
+- I favor pragmatic solutions over ideal ones, especially in enterprise settings where constraints are real and trade-offs matter.
 
 - Graphs are not just a technology, they are a way of thinking about data: focusing on relationships, context, and meaning rather than just structure.
 
-- I care a lot about clarity in architecture—building systems that are not only scalable, but also understandable and maintainable over time.
+- I care about clarity in architecture—building systems that are not only scalable, but also understandable and maintainable over time.
 
 ---
 
