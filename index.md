@@ -7,10 +7,10 @@ title: Engineering Perspective
   <img src="{{ site.baseurl }}/assets/images/profile.jpg" alt="Alex Pankraz" class="profile-photo-small">
   
   <div class="hero-content">
-    <h1 class="hero-name">Alex Pankraz <span class="hero-role">| Lead Engineer & Architect</span></h1>
+    <h1 class="hero-name">Alex Pankraz <span class="hero-role">| Engineer & Architect</span></h1>
     <p class="hero-bio">
-      Building connected systems at scale where <strong>Graphs, Data, and AI</strong> meet. 
-      Focused on pragmatic enterprise architecture and translating complex requirements into resilient strategies.
+      Building connected systems  where <strong>Graphs, Data, and AI</strong> meet in enterprise environments. 
+      Focused on pragmatic architecture and translating complex requirements into resilient strategies.
     </p>
   </div>
 </div>
@@ -32,4 +32,4 @@ title: Engineering Perspective
     </div>
   </article>
   {% endfor %}
-</section>
+</section
