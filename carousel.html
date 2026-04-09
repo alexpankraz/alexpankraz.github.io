@@ -190,38 +190,53 @@ No command? Uses the global text color.
             });
         }
 
-        async function downloadPDF() {
-            const btn = document.getElementById('downloadBtn');
-            btn.innerText = "CAPTURING SLIDES...";
-            btn.disabled = true;
+  async function downloadPDF() {
+    const btn = document.getElementById('downloadBtn');
+    const originalText = btn.innerText;
+    btn.innerText = "CAPTURING SLIDES...";
+    btn.disabled = true;
 
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'pt', [810, 810]);
-            const slides = document.querySelectorAll('[id^="slide-"]');
+    try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'pt', [810, 810]);
+        const slides = document.querySelectorAll('[id^="slide-"]');
 
-            for (let i = 0; i < slides.length; i++) {
-                if (i > 0) pdf.addPage([810, 810], 'p');
+        for (let i = 0; i < slides.length; i++) {
+            btn.innerText = `PROCESSING SLIDE ${i + 1} of ${slides.length}...`;
+            
+            // 1. Move the slide into view temporarily (Fixes "Blank/Stuck" issue)
+            slides[i].scrollIntoView();
 
-                const slideColor = slides[i].dataset.bg;
-                pdf.setFillColor(slideColor);
-                pdf.rect(0, 0, 810, 810, 'F');
+            // 2. Add new page if not the first slide
+            if (i > 0) pdf.addPage([810, 810], 'p');
 
-                const canvas = await html2canvas(slides[i], {
-                    scale: 2.5,
-                    useCORS: true,
-                    backgroundColor: slideColor,
-                    width: 500,
-                    height: 500
-                });
+            // 3. Capture with a slight delay to ensure UI is ready
+            const canvas = await html2canvas(slides[i], {
+                scale: 2, // Dropped to 2 to prevent memory crashes on mobile
+                useCORS: true,
+                backgroundColor: slides[i].dataset.bg || "#ffffff",
+                logging: false, // Turn off logging to save performance
+                width: 500,
+                height: 500
+            });
 
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                pdf.addImage(imgData, 'JPEG', -2, -2, 814, 814);
-            }
-
-            pdf.save('carousel-studio.pdf');
-            btn.innerText = "GENERATE CAROUSEL PDF";
-            btn.disabled = false;
+            // 4. Convert and add to PDF
+            const imgData = canvas.toDataURL('image/jpeg', 0.9);
+            pdf.addImage(imgData, 'JPEG', -2, -2, 814, 814);
+            
+            // Optional: small sleep to let the browser breathe
+            await new Promise(r => setTimeout(r, 100)); 
         }
+
+        pdf.save('carousel-studio.pdf');
+    } catch (error) {
+        console.error("PDF Generation failed:", error);
+        alert("Something went wrong. Try reducing the number of slides or image sizes.");
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+}
 
         [input, textColor].forEach(el => el.addEventListener('input', updateUI));
         updateUI();
