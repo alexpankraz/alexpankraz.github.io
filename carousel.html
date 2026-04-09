@@ -3,16 +3,16 @@ layout: page
 title: LinkedIn Carousel Maker
 permalink: /carousel/
 ---
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carousel Studio Pro Max</title>
+    <title>Carousel Studio Stable</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <style>
-        /* THE STABLE CORE: Slides are ALWAYS 1080x1080 internally */
+        /* This CSS handles the internal 1080px logic without external files */
         .slide-canvas {
             width: 1080px;
             height: 1080px;
@@ -21,31 +21,28 @@ permalink: /carousel/
             background-size: cover;
             background-position: center;
             overflow: hidden;
-            flex-shrink: 0;
-            display: block; /* Avoid flexbox bugs during capture */
         }
 
-        /* Scaled for your screen display only */
+        /* Shrinks the 1080px slide so it fits on your mobile screen */
         .preview-scale {
             transform: scale(0.35); 
             transform-origin: top center;
             margin-bottom: -680px; 
         }
 
+        /* The 'Magic' Centering that won't break on export */
         .slide-content {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 920px;
+            width: 900px;
             text-align: center;
-            word-wrap: break-word;
             z-index: 10;
         }
 
         .slide-content h1 { font-size: 90px !important; font-weight: 900 !important; line-height: 1.1; margin-bottom: 40px; }
-        .slide-content p { font-size: 45px !important; line-height: 1.4; font-weight: 500; }
-        .drop-shadow { text-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .slide-content p { font-size: 45px !important; line-height: 1.4; }
         
         .page-num {
             position: absolute;
@@ -53,56 +50,50 @@ permalink: /carousel/
             right: 60px;
             font-size: 28px;
             font-weight: bold;
-            opacity: 0.7;
-            z-index: 20;
+            opacity: 0.6;
         }
 
-        #previewContainer::-webkit-scrollbar { width: 8px; }
-        #previewContainer::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        #previewContainer {
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
     </style>
 </head>
-<body class="bg-slate-50 p-4 md:p-8 font-sans text-slate-900">
+<body class="bg-slate-50 p-4 md:p-10">
 
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
-        
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
         <div class="space-y-6">
             <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200">
-                <h2 class="text-lg font-black mb-3 text-blue-600 uppercase tracking-widest">1. Content</h2>
-                <textarea id="markdownInput" class="w-full h-64 p-4 border border-slate-200 rounded-2xl font-mono text-sm outline-none focus:ring-4 focus:ring-blue-100 transition-all">
+                <textarea id="markdownInput" class="w-full h-72 p-4 border rounded-2xl font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none">
 img: 1
-# Local Image
-Reference your tray by number!
+# Perfect Capture
+This uses the "Tank" method to prevent cropping.
 ---
 img: 2
-# Second Photo
-Perfect for branding.
+# Stability
+No extra CSS files needed.
 ---
 bg: #1e293b
-# Color Slide
-Just use bg: [color]
+# The End
+Ready for LinkedIn.
                 </textarea>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200 space-y-4">
-                <h2 class="text-lg font-black mb-1 text-blue-600 uppercase tracking-widest">2. Image Tray</h2>
-                <input type="file" id="imageUpload" accept="image/*" multiple class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
-                
-                <div id="thumbTray" class="flex flex-wrap gap-2 min-h-[50px] p-2 bg-slate-50 rounded-xl"></div>
-
-                <div class="flex gap-6 items-center border-t pt-4">
-                    <div class="flex flex-col items-center">
-                        <input type="color" id="textColor" value="#ffffff" class="w-12 h-12 border-0 bg-transparent cursor-pointer">
-                        <span class="text-[10px] font-bold mt-1 uppercase text-slate-400">Text</span>
-                    </div>
+            <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200">
+                <input type="file" id="imageUpload" accept="image/*" multiple class="block w-full text-sm mb-4">
+                <div id="thumbTray" class="flex flex-wrap gap-2 mb-4"></div>
+                <div class="flex items-center gap-4 border-t pt-4">
+                    <input type="color" id="textColor" value="#ffffff" class="w-10 h-10 rounded border-0 cursor-pointer">
+                    <span class="text-sm font-bold text-slate-500">Global Text Color</span>
                 </div>
             </div>
 
-            <button onclick="downloadPDF()" id="downloadBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-6 rounded-3xl shadow-2xl transition-all active:scale-95 text-xl uppercase tracking-tighter">
-                Export LinkedIn PDF
+            <button onclick="downloadPDF()" id="downloadBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl shadow-lg transition-transform active:scale-95 uppercase">
+                Download Carousel PDF
             </button>
         </div>
 
-        <div id="previewContainer" class="overflow-y-auto max-h-[90vh] bg-slate-200 p-8 rounded-[3rem] border-4 border-white shadow-inner">
+        <div id="previewContainer" class="overflow-y-auto max-h-screen p-6 bg-slate-200 rounded-[2rem] border-2 border-slate-300">
             </div>
     </div>
 
@@ -134,9 +125,9 @@ Just use bg: [color]
 
         function renderThumbs() {
             thumbTray.innerHTML = gallery.map((img, i) => `
-                <div class="relative w-14 h-14 border-2 border-blue-400 rounded-lg overflow-hidden shadow-md">
+                <div class="relative w-12 h-12 border-2 border-blue-500 rounded overflow-hidden">
                     <img src="${img}" class="w-full h-full object-cover">
-                    <span class="absolute top-0 left-0 bg-blue-500 text-white text-[10px] px-1 font-bold rounded-br">${i+1}</span>
+                    <span class="absolute top-0 left-0 bg-blue-500 text-white text-[10px] px-1 font-bold">${i+1}</span>
                 </div>
             `).join('');
         }
@@ -165,13 +156,13 @@ Just use bg: [color]
                 wrapper.className = "preview-scale";
 
                 const slide = document.createElement('div');
-                slide.className = "slide-canvas shadow-2xl mx-auto rounded-none";
+                slide.className = "slide-canvas shadow-2xl mx-auto";
                 slide.id = `slide-${i}`;
                 slide.style.backgroundColor = bgColor;
                 if (bgImg) slide.style.backgroundImage = `url(${bgImg})`;
                 
                 const content = document.createElement('div');
-                content.className = "slide-content " + (bgImg ? "drop-shadow" : "");
+                content.className = "slide-content";
                 content.style.color = textColor.value;
                 content.innerHTML = marked.parse(cleanText);
 
@@ -184,61 +175,54 @@ Just use bg: [color]
                 slide.appendChild(num);
                 wrapper.appendChild(slide);
                 preview.appendChild(wrapper);
-                
+
                 slide.querySelectorAll('*').forEach(el => el.style.color = textColor.value);
             });
         }
 
         async function downloadPDF() {
-    const btn = document.getElementById('downloadBtn');
-    const originalText = btn.innerText;
-    btn.disabled = true;
-    
-    const { jsPDF } = window.jspdf;
-    // Use 1080pt to match our internal 1080px slide size exactly
-    const pdf = new jsPDF('p', 'pt', [1080, 1080]);
-    const slides = document.querySelectorAll('.slide-canvas');
-    const wrappers = document.querySelectorAll('.preview-scale');
+            const btn = document.getElementById('downloadBtn');
+            btn.disabled = true;
+            btn.innerText = "CAPTURING...";
 
-    for (let i = 0; i < slides.length; i++) {
-        btn.innerText = `EXPORTING ${i+1}/${slides.length}...`;
-        
-        // 1. TEMPORARY FIX: Remove scaling from the wrapper so html2canvas sees full size
-        const originalTransform = wrappers[i].style.transform;
-        const originalMargin = wrappers[i].style.marginBottom;
-        wrappers[i].style.transform = "none";
-        wrappers[i].style.marginBottom = "0";
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'pt', [1080, 1080]);
+            const slides = document.querySelectorAll('.slide-canvas');
 
-        if (i > 0) pdf.addPage([1080, 1080], 'p');
+            // Create invisible Tank to render clones
+            const tank = document.createElement('div');
+            tank.style.cssText = "position:absolute; top:-10000px; left:-10000px; width:1080px; height:1080px;";
+            document.body.appendChild(tank);
 
-        // 2. Capture at scale 1 (since the slide is already 1080px)
-        const canvas = await html2canvas(slides[i], {
-            scale: 1, 
-            useCORS: true,
-            logging: false,
-            width: 1080, 
-            height: 1080,
-            // Ensure background is captured
-            backgroundColor: slides[i].style.backgroundColor || "#ffffff"
-        });
+            for (let i = 0; i < slides.length; i++) {
+                btn.innerText = `SLIDE ${i+1}/${slides.length}...`;
+                
+                // Clone slide into the tank (resets transforms and visibility issues)
+                const clone = slides[i].cloneNode(true);
+                tank.appendChild(clone);
 
-        // 3. Add to PDF
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        pdf.addImage(imgData, 'JPEG', 0, 0, 1080, 1080);
-        
-        // 4. RESTORE: Put the preview back to its small size
-        wrappers[i].style.transform = originalTransform;
-        wrappers[i].style.marginBottom = originalMargin;
+                if (i > 0) pdf.addPage([1080, 1080], 'p');
 
-        // Cleanup
-        canvas.width = 0; canvas.height = 0;
-        await new Promise(r => setTimeout(r, 100));
-    }
+                const canvas = await html2canvas(clone, {
+                    scale: 1,
+                    useCORS: true,
+                    width: 1080,
+                    height: 1080
+                });
 
-    pdf.save('carousel-fixed.pdf');
-    btn.innerText = originalText;
-    btn.disabled = false;
-}
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                pdf.addImage(imgData, 'JPEG', 0, 0, 1080, 1080);
+                
+                tank.innerHTML = ''; // Flush clone
+                canvas.width = 0; canvas.height = 0; // Clear memory
+                await new Promise(r => setTimeout(r, 100));
+            }
+
+            pdf.save('carousel.pdf');
+            document.body.removeChild(tank);
+            btn.innerText = "Download Carousel PDF";
+            btn.disabled = false;
+        }
 
         [input, textColor].forEach(el => el.addEventListener('input', updateUI));
         updateUI();
