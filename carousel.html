@@ -147,40 +147,47 @@ Download and upload to LinkedIn!
         });
     }
 
-    async function downloadPDF() {
-        const btn = document.getElementById('downloadBtn');
-        btn.innerText = "Capturing...";
-        btn.disabled = true;
+async function downloadPDF() {
+    const btn = document.getElementById('downloadBtn');
+    btn.innerText = "Applying Gap-Fix...";
+    btn.disabled = true;
 
-        const { jsPDF } = window.jspdf;
-        // Using 810pt (equivalent of 1080px)
-        const pdf = new jsPDF('p', 'pt', [810, 810]);
-        const slides = document.querySelectorAll('.slide-canvas');
+    const { jsPDF } = window.jspdf;
+    // 810pt is exactly 1080px at 96dpi. No decimals allowed!
+    const pageWidth = 810; 
+    const pageHeight = 810;
+    const pdf = new jsPDF('p', 'pt', [pageWidth, pageHeight]);
+    
+    const slides = document.querySelectorAll('.slide-canvas');
 
-        for (let i = 0; i < slides.length; i++) {
-            if (i > 0) pdf.addPage([810, 810], 'p');
+    for (let i = 0; i < slides.length; i++) {
+        if (i > 0) pdf.addPage([pageWidth, pageHeight], 'p');
 
-            const canvas = await html2canvas(slides[i], {
-                scale: 3, // Upscale for sharpness
-                useCORS: true,
-                backgroundColor: bgColor.value,
-                logging: false,
-                width: 500,
-                height: 500
-            });
+        // Draw a solid background rectangle first that is 4pt larger than the page
+        // This acts as a "safety net" for the 1px gaps
+        pdf.setFillColor(bgColor.value);
+        pdf.rect(-2, -2, pageWidth + 4, pageHeight + 4, 'F');
 
-            const imgData = canvas.toDataURL('image/jpeg', 0.92);
-            
-            /* THE BLEED FIX: 
-               Placing image at -2, -2 and making it 814 wide 
-               eliminates the OneDrive "white line" gap. */
-            pdf.addImage(imgData, 'JPEG', -2, -2, 814, 814);
-        }
+        const canvas = await html2canvas(slides[i], {
+            scale: 2, 
+            useCORS: true,
+            backgroundColor: bgColor.value,
+            logging: false,
+            // Force the capture to ignore the "preview" size and use 1080
+            width: 500,
+            height: 500
+        });
 
-        pdf.save('linkedin-carousel.pdf');
-        btn.innerText = "Download LinkedIn PDF";
-        btn.disabled = false;
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        
+        // Place image with a slight overlap (Bleed)
+        pdf.addImage(imgData, 'JPEG', -1, -1, pageWidth + 2, pageHeight + 2);
     }
+
+    pdf.save('linkedin-carousel.pdf');
+    btn.innerText = "Download LinkedIn PDF";
+    btn.disabled = false;
+}
 
     [input, bgColor, textColor, showPages].forEach(el => el.addEventListener('input', updateUI));
     updateUI();
