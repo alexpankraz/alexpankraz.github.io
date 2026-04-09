@@ -1,0 +1,134 @@
+---
+layout: page
+title: LinkedIn Carousel Generator
+permalink: /carousel/
+---
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div id="carousel-tool-container" class="not-prose text-slate-900 bg-white p-4 rounded-xl border border-gray-200">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+        <div class="space-y-4">
+            <div class="flex flex-col gap-2">
+                <label class="font-bold text-sm">Markdown Content</label>
+                <textarea id="markdownInput" class="w-full h-80 p-4 border rounded-lg font-mono text-sm shadow-inner focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Type here...">
+# Slide One
+Welcome to my blog tool!
+---
+# Slide Two
+It centers automatically.
+---
+# Final Slide
+Download as PDF below.
+                </textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg border">
+                <div>
+                    <label class="block text-xs font-semibold mb-1 uppercase">Background</label>
+                    <input type="color" id="bgColor" value="#ffffff" class="w-full h-10 rounded cursor-pointer">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1 uppercase">Text Color</label>
+                    <input type="color" id="textColor" value="#1e293b" class="w-full h-10 rounded cursor-pointer">
+                </div>
+            </div>
+
+            <button onclick="downloadPDF()" id="downloadBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95">
+                Generate LinkedIn PDF
+            </button>
+        </div>
+
+        <div class="flex flex-col items-center">
+            <label class="font-bold text-sm mb-2 self-start text-slate-500">Live Preview (1:1 Ratio)</label>
+            <div id="previewContainer" class="w-full flex flex-col items-center gap-6 overflow-y-auto max-h-[600px] p-6 bg-slate-100 rounded-xl border-inner">
+                </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+{% raw %}
+<script>
+    const input = document.getElementById('markdownInput');
+    const bgColor = document.getElementById('bgColor');
+    const textColor = document.getElementById('textColor');
+    const preview = document.getElementById('previewContainer');
+
+    function renderSlides() {
+        const slides = input.value.split('---');
+        preview.innerHTML = '';
+
+        slides.forEach((content, i) => {
+            const slideWrapper = document.createElement('div');
+            // We use a CSS variable for the aspect ratio to keep it square
+            slideWrapper.className = "relative shadow-lg border border-gray-300 flex items-center justify-center p-10 text-center break-words overflow-hidden";
+            slideWrapper.style.width = "100%";
+            slideWrapper.style.maxWidth = "400px"; 
+            slideWrapper.style.aspectRatio = "1 / 1";
+            slideWrapper.style.backgroundColor = bgColor.value;
+            slideWrapper.style.color = textColor.value;
+            slideWrapper.id = `slide-item-${i}`;
+
+            // Flex-centering logic
+            const innerContent = document.createElement('div');
+            innerContent.className = "w-full";
+            innerContent.innerHTML = marked.parse(content);
+
+            // Simple auto-scaling font logic:
+            innerContent.style.fontSize = "1.2rem";
+
+            slideWrapper.appendChild(innerContent);
+            preview.appendChild(slideWrapper);
+
+            // Apply text color to all generated elements
+            slideWrapper.querySelectorAll('*').forEach(el => el.style.color = textColor.value);
+        });
+    }
+
+    async function downloadPDF() {
+        const btn = document.getElementById('downloadBtn');
+        const originalText = btn.innerText;
+        btn.innerText = "Processing Slides...";
+        btn.disabled = true;
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'px', [1080, 1080]);
+        const slides = document.querySelectorAll('[id^="slide-item-"]');
+
+        for (let i = 0; i < slides.length; i++) {
+            // To ensure high quality, we temporarily upscale the element for the canvas
+            const canvas = await html2canvas(slides[i], {
+                scale: 3, // 3x scale for crisp text on LinkedIn
+                useCORS: true,
+                backgroundColor: bgColor.value
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            if (i > 0) pdf.addPage([1080, 1080], 'p');
+            pdf.addImage(imgData, 'PNG', 0, 0, 1080, 1080);
+        }
+
+        pdf.save('linkedin-carousel.pdf');
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+
+    input.addEventListener('input', renderSlides);
+    bgColor.addEventListener('input', renderSlides);
+    textColor.addEventListener('input', renderSlides);
+    renderSlides();
+</script>
+
+<style>
+    /* Prevent the tool from inheriting messy blog styles */
+    #carousel-tool-container h1 { font-size: 2.5rem !important; font-weight: 800 !important; margin: 0 !important; line-height: 1.1 !important; }
+    #carousel-tool-container p { font-size: 1.2rem !important; margin-top: 1rem !important; }
+    #carousel-tool-container ul { list-style: none !important; padding: 0 !important; }
+    .not-prose * { box-sizing: border-box; }
+</style>
+{% endraw %}
