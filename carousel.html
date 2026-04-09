@@ -4,87 +4,105 @@ title: LinkedIn Carousel Maker
 permalink: /carousel/
 ---
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkedIn Carousel Studio</title>
+    <title>Carousel Studio Pro Max</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* THE STABLE CORE: Slides are ALWAYS 1080x1080 internally */
         .slide-canvas {
-            width: 500px;
-            height: 500px;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            align-items: center !important;
-            text-align: center;
+            width: 1080px;
+            height: 1080px;
             position: relative;
+            background-color: #ffffff;
+            background-size: cover;
+            background-position: center;
             overflow: hidden;
-            border: none !important;
-            outline: none !important;
-            box-sizing: border-box !important;
+            flex-shrink: 0;
+            display: block; /* Avoid flexbox bugs during capture */
         }
-        /* Markdown Styling */
-        .slide-content h1 { font-size: 3rem !important; font-weight: 800 !important; margin: 0 !important; line-height: 1.1 !important; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .slide-content p { font-size: 1.4rem !important; margin-top: 1rem !important; opacity: 0.9; text-shadow: 0 1px 5px rgba(0,0,0,0.2); }
+
+        /* Scaled for your screen display only */
+        .preview-scale {
+            transform: scale(0.35); 
+            transform-origin: top center;
+            margin-bottom: -680px; 
+        }
+
+        .slide-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 920px;
+            text-align: center;
+            word-wrap: break-word;
+            z-index: 10;
+        }
+
+        .slide-content h1 { font-size: 90px !important; font-weight: 900 !important; line-height: 1.1; margin-bottom: 40px; }
+        .slide-content p { font-size: 45px !important; line-height: 1.4; font-weight: 500; }
+        .drop-shadow { text-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         
-        /* Custom Scrollbar */
-        #previewContainer::-webkit-scrollbar { width: 6px; }
+        .page-num {
+            position: absolute;
+            bottom: 50px;
+            right: 60px;
+            font-size: 28px;
+            font-weight: bold;
+            opacity: 0.7;
+            z-index: 20;
+        }
+
+        #previewContainer::-webkit-scrollbar { width: 8px; }
         #previewContainer::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-900 p-4 md:p-8">
+<body class="bg-slate-50 p-4 md:p-8 font-sans text-slate-900">
 
-    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
         
         <div class="space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <h2 class="text-xl font-bold mb-4">1. Editor</h2>
-                <textarea id="markdownInput" class="w-full h-80 p-4 border border-slate-300 rounded-xl font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none shadow-inner">
+            <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200">
+                <h2 class="text-lg font-black mb-3 text-blue-600 uppercase tracking-widest">1. Content</h2>
+                <textarea id="markdownInput" class="w-full h-64 p-4 border border-slate-200 rounded-2xl font-mono text-sm outline-none focus:ring-4 focus:ring-blue-100 transition-all">
 img: 1
-# Slide One
-Uses the first image in your tray!
+# Local Image
+Reference your tray by number!
 ---
 img: 2
-# Slide Two
-Uses the second image.
+# Second Photo
+Perfect for branding.
 ---
 bg: #1e293b
-# Slide Three
-I used a color override here.
----
-# Slide Four
-No command? Uses the global text color.
+# Color Slide
+Just use bg: [color]
                 </textarea>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-                <h2 class="text-xl font-bold">2. Local Gallery</h2>
-                <input type="file" id="imageUpload" accept="image/*" multiple class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200 space-y-4">
+                <h2 class="text-lg font-black mb-1 text-blue-600 uppercase tracking-widest">2. Image Tray</h2>
+                <input type="file" id="imageUpload" accept="image/*" multiple class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
                 
-                <div id="thumbTray" class="flex flex-wrap gap-2 mt-4">
-                    </div>
+                <div id="thumbTray" class="flex flex-wrap gap-2 min-h-[50px] p-2 bg-slate-50 rounded-xl"></div>
 
-                <div class="grid grid-cols-2 gap-4 pt-4 border-t">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Global Text Color</label>
-                        <input type="color" id="textColor" value="#ffffff" class="w-full h-10 rounded cursor-pointer border-0">
-                    </div>
-                    <div class="flex items-end">
-                        <button onclick="clearGallery()" class="text-xs text-red-500 font-bold hover:underline">Clear Gallery</button>
+                <div class="flex gap-6 items-center border-t pt-4">
+                    <div class="flex flex-col items-center">
+                        <input type="color" id="textColor" value="#ffffff" class="w-12 h-12 border-0 bg-transparent cursor-pointer">
+                        <span class="text-[10px] font-bold mt-1 uppercase text-slate-400">Text</span>
                     </div>
                 </div>
             </div>
 
-            <button onclick="downloadPDF()" id="downloadBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl shadow-xl transition-all active:scale-95 text-lg">
-                GENERATE CAROUSEL PDF
+            <button onclick="downloadPDF()" id="downloadBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-6 rounded-3xl shadow-2xl transition-all active:scale-95 text-xl uppercase tracking-tighter">
+                Export LinkedIn PDF
             </button>
         </div>
 
-        <div id="previewContainer" class="flex flex-col items-center gap-8 overflow-y-auto max-h-[90vh] p-8 bg-slate-200 rounded-2xl border-2 border-dashed border-slate-300">
+        <div id="previewContainer" class="overflow-y-auto max-h-[90vh] bg-slate-200 p-8 rounded-[3rem] border-4 border-white shadow-inner">
             </div>
     </div>
 
@@ -101,41 +119,26 @@ No command? Uses the global text color.
         
         let gallery = [];
 
-        // Handle File Uploads
-        imageUpload.addEventListener('change', async function(e) {
+        imageUpload.addEventListener('change', async (e) => {
             const files = Array.from(e.target.files);
             for (const file of files) {
-                const base64 = await toBase64(file);
-                gallery.push(base64);
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    gallery.push(ev.target.result);
+                    renderThumbs();
+                    updateUI();
+                };
+                reader.readAsDataURL(file);
             }
-            renderThumbnails();
-            updateUI();
         });
 
-        function toBase64(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function renderThumbnails() {
-            thumbTray.innerHTML = '';
-            gallery.forEach((img, i) => {
-                const wrap = document.createElement('div');
-                wrap.className = "relative w-16 h-16 border-2 border-blue-500 rounded-lg overflow-hidden shadow-sm";
-                wrap.innerHTML = `<img src="${img}" class="w-full h-full object-cover">
-                                  <span class="absolute top-0 left-0 bg-blue-500 text-white text-[10px] px-1 font-bold">${i+1}</span>`;
-                thumbTray.appendChild(wrap);
-            });
-        }
-
-        function clearGallery() {
-            gallery = [];
-            imageUpload.value = '';
-            renderThumbnails();
-            updateUI();
+        function renderThumbs() {
+            thumbTray.innerHTML = gallery.map((img, i) => `
+                <div class="relative w-14 h-14 border-2 border-blue-400 rounded-lg overflow-hidden shadow-md">
+                    <img src="${img}" class="w-full h-full object-cover">
+                    <span class="absolute top-0 left-0 bg-blue-500 text-white text-[10px] px-1 font-bold rounded-br">${i+1}</span>
+                </div>
+            `).join('');
         }
 
         function updateUI() {
@@ -143,100 +146,79 @@ No command? Uses the global text color.
             preview.innerHTML = '';
 
             slidesArr.forEach((text, i) => {
-                const imgIndexMatch = text.match(/^img:\s*(\d+)/i);
+                const imgMatch = text.match(/^img:\s*(\d+)/i);
                 const bgMatch = text.match(/^bg:\s*([#\w\d]+)/i);
                 
-                let currentBgColor = "#334155"; // Default fallback
-                let currentBgImage = "";
+                let bgColor = "#334155";
+                let bgImg = "";
                 let cleanText = text;
 
-                if (imgIndexMatch) {
-                    const idx = parseInt(imgIndexMatch[1]) - 1;
-                    if (gallery[idx]) {
-                        currentBgImage = gallery[idx];
-                        cleanText = text.replace(/^img:\s*\d+\n?/, '');
-                    }
+                if (imgMatch && gallery[parseInt(imgMatch[1]) - 1]) {
+                    bgImg = gallery[parseInt(imgMatch[1]) - 1];
+                    cleanText = text.replace(/^img:\s*\d+\n?/, '');
                 } else if (bgMatch) {
-                    currentBgColor = bgMatch[1];
+                    bgColor = bgMatch[1];
                     cleanText = text.replace(/^bg:\s*[#\w\d]+\n?/, '');
                 }
 
-                const slide = document.createElement('div');
-                slide.className = "slide-canvas shadow-2xl bg-slate-800";
-                slide.style.backgroundColor = currentBgColor;
-                if (currentBgImage) {
-                    slide.style.backgroundImage = `url(${currentBgImage})`;
-                    slide.style.backgroundSize = "cover";
-                    slide.style.backgroundPosition = "center";
-                }
-                slide.id = `slide-${i}`;
-                slide.dataset.bg = currentBgColor;
+                const wrapper = document.createElement('div');
+                wrapper.className = "preview-scale";
 
+                const slide = document.createElement('div');
+                slide.className = "slide-canvas shadow-2xl mx-auto rounded-none";
+                slide.id = `slide-${i}`;
+                slide.style.backgroundColor = bgColor;
+                if (bgImg) slide.style.backgroundImage = `url(${bgImg})`;
+                
                 const content = document.createElement('div');
-                content.className = "slide-content p-12 w-full z-10 drop-shadow-lg";
+                content.className = "slide-content " + (bgImg ? "drop-shadow" : "");
                 content.style.color = textColor.value;
                 content.innerHTML = marked.parse(cleanText);
 
                 const num = document.createElement('div');
-                num.className = "absolute bottom-6 right-8 text-sm font-black opacity-60";
+                num.className = "page-num";
                 num.style.color = textColor.value;
-                num.innerText = `${i+1} / ${slidesArr.length}`;
+                num.innerText = `${i+1}/${slidesArr.length}`;
 
                 slide.appendChild(content);
                 slide.appendChild(num);
-                preview.appendChild(slide);
-
+                wrapper.appendChild(slide);
+                preview.appendChild(wrapper);
+                
                 slide.querySelectorAll('*').forEach(el => el.style.color = textColor.value);
             });
         }
 
-  async function downloadPDF() {
-    const btn = document.getElementById('downloadBtn');
-    const originalText = btn.innerText;
-    btn.innerText = "CAPTURING SLIDES...";
-    btn.disabled = true;
-
-    try {
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'pt', [810, 810]);
-        const slides = document.querySelectorAll('[id^="slide-"]');
-
-        for (let i = 0; i < slides.length; i++) {
-            btn.innerText = `PROCESSING SLIDE ${i + 1} of ${slides.length}...`;
+        async function downloadPDF() {
+            const btn = document.getElementById('downloadBtn');
+            btn.disabled = true;
             
-            // 1. Move the slide into view temporarily (Fixes "Blank/Stuck" issue)
-            slides[i].scrollIntoView();
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'pt', [1080, 1080]);
+            const slides = document.querySelectorAll('.slide-canvas');
 
-            // 2. Add new page if not the first slide
-            if (i > 0) pdf.addPage([810, 810], 'p');
+            for (let i = 0; i < slides.length; i++) {
+                btn.innerText = `EXPORTING ${i+1}/${slides.length}...`;
+                if (i > 0) pdf.addPage([1080, 1080], 'p');
 
-            // 3. Capture with a slight delay to ensure UI is ready
-            const canvas = await html2canvas(slides[i], {
-                scale: 2, // Dropped to 2 to prevent memory crashes on mobile
-                useCORS: true,
-                backgroundColor: slides[i].dataset.bg || "#ffffff",
-                logging: false, // Turn off logging to save performance
-                width: 500,
-                height: 500
-            });
+                const canvas = await html2canvas(slides[i], {
+                    scale: 1, // Fixed 1080 rendering
+                    useCORS: true,
+                    logging: false,
+                    width: 1080, height: 1080
+                });
 
-            // 4. Convert and add to PDF
-            const imgData = canvas.toDataURL('image/jpeg', 0.9);
-            pdf.addImage(imgData, 'JPEG', -2, -2, 814, 814);
-            
-            // Optional: small sleep to let the browser breathe
-            await new Promise(r => setTimeout(r, 100)); 
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                pdf.addImage(imgData, 'JPEG', 0, 0, 1080, 1080);
+                
+                canvas.width = 0; canvas.height = 0; // Clear memory
+                await new Promise(r => setTimeout(r, 150));
+            }
+
+            pdf.save('carousel-stable.pdf');
+            btn.innerText = "Export LinkedIn PDF";
+            btn.disabled = false;
         }
-
-        pdf.save('carousel-studio.pdf');
-    } catch (error) {
-        console.error("PDF Generation failed:", error);
-        alert("Something went wrong. Try reducing the number of slides or image sizes.");
-    } finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
-    }
-}
 
         [input, textColor].forEach(el => el.addEventListener('input', updateUI));
         updateUI();
